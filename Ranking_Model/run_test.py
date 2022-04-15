@@ -95,10 +95,10 @@ if __name__ == "__main__":
     args_str = """
     --device 0
     --max_len 64
-    --model_path /SISDC_GPFS/Home_SE/hy-suda/zfli/Models/output_model/Classification_Model/post_classification/data=Data_bz=2x1_ep=5_lr=5e-05_ae=1e-06_seed=42/checkpoints/epoch=04-step=11-val_loss=0.7118-acc=1.0000.ckpt
-    --target_path /SISDC_GPFS/Home_SE/hy-suda/zfli/CODE/demo/Data/test.tsf
+    --model_path ../output_model/Classification_Model/post_classification/data=Data_bz=2x1_ep=5_lr=5e-05_ae=1e-06_seed=42/checkpoints/epoch=04-step=11-val_loss=0.7118-acc=1.0000.ckpt
+    --target_path ..newData/test.csv
     --output_path /SISDC_GPFS/Home_SE/hy-suda/zfli/CODE/demo/Data/output/result.json
-    --PTM_name_or_path /SISDC_GPFS/Home_SE/hy-suda/zfli/Models/init_model/bert-base-chinese
+    --PTM_name_or_path ../init_model/bert-base-chinese
     """
 
     args = parser.parse_args(args_str.split())

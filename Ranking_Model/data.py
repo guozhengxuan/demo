@@ -12,6 +12,7 @@ import re
 import time
 import json
 import logging
+import pandas as pd
 from typing import Optional
 from multiprocessing import Pool, cpu_count  # https://docs.python.org/3/library/multiprocessing.html
 from collections import OrderedDict
@@ -56,25 +57,25 @@ class Classification_Dataset(Dataset):
         self.convert_tokens_to_ids()
 
     def load_and_format_data(self):
-        if not os.path.isfile(self.dataset_path):
-            # train 和 dev 给一个文件夹即可
-            target = os.path.join(self.dataset_path, f"{self.dataset_type}.tsf")
-        else:
-            # test 的时候给文件
-            target = self.dataset_path
-        assert os.path.isfile(target)
+        # with open(target, 'r', encoding='utf-8') as f:
+        #     for index, line in enumerate(f.readlines()):
+        #         line = line.strip().split('\t')
+        #         example_id, context = line[:2]
+        #
+        #         if not self.predict:
+        #             label = line[3]
+        #             self.labels.append(int(label))
+        #
+        #         self.raw_examples.append(context)
+        #         self.example_ids.append(example_id)
+        target = self.dataset_path
+        df = pd.read_csv(os.path.join(target, self.dataset_type + '.csv'))
+        for index, row in df.iterrows():
+            self.example_ids.append(row['id'])
+            self.raw_examples.append(row['review'])
+            if not self.predict:
+                self.labels.append(int(row['label']))
 
-        with open(target, 'r', encoding='utf-8') as f:
-            for index, line in enumerate(f.readlines()):
-                line = line.strip().split('\t')
-                example_id, context = line[:2]
-
-                if not self.predict:
-                    label = line[3]
-                    self.labels.append(int(label))
-
-                self.raw_examples.append(context)
-                self.example_ids.append(example_id)
         logging.info(f"{self.dataset_type} dataset loaded")
 
     def convert_tokens_to_ids(self):

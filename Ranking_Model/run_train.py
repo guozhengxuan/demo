@@ -67,15 +67,15 @@ def main(args):
         args.dataset_path, args.max_len, tokenizer, "train",
     )
 
-    dev_dataset = Classification_Dataset(
-        args.dataset_path, args.max_len, tokenizer, "dev",
-    )
+    # dev_dataset = Classification_Dataset(
+    #     args.dataset_path, args.max_len, tokenizer, "dev",
+    # )
 
     train_dataloader = train_dataset.make_dataloader(
         batch_size=args.train_batch_size_per_gpu
     )
-    dev_dataloader = dev_dataset.make_dataloader(
-        batch_size=args.dev_batch_size_per_gpu)
+    # dev_dataloader = dev_dataset.make_dataloader(
+    #     batch_size=args.dev_batch_size_per_gpu)
     model.set_example_num(len(train_dataset))
 
     # set trainer
@@ -103,7 +103,7 @@ def main(args):
     )
 
     trainer.fit(model, train_dataloader)
-    trainer.fit(model, train_dataloader, dev_dataloader)
+    # trainer.fit(model, train_dataloader, dev_dataloader)
     logger.info('finished')
 
 
@@ -134,10 +134,10 @@ if __name__ == "__main__":
 
     arg_str = """
     --task_name post_classification
-    --label_num 3
+    --label_num 4
     --PTM_name_or_path ../init_model/bert-base-chinese
     --output_path ../output_model/Classification_Model
-    --dataset_path ../Data
+    --dataset_path ../newData
     --max_len 64
     --epoch 5
     --learning_rate 5e-5
