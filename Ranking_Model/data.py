@@ -97,7 +97,7 @@ class Classification_Dataset(Dataset):
 
         dataloader = DataLoader(
             self, sampler=data_sampler,
-            batch_size=batch_size, num_workers=4,
+            batch_size=batch_size, num_workers=0,
         )
 
         return dataloader

@@ -1,6 +1,7 @@
 import argparse
 import os
 import logging
+import pickle
 
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.loggers import TensorBoardLogger
@@ -63,19 +64,25 @@ def main(args):
 
     # dataset -> dataloader
     logger.info(f"load dataset from {args.dataset_path}")
-    train_dataset = Classification_Dataset(
-        args.dataset_path, args.max_len, tokenizer, "train",
-    )
+    if not os.path.exists('../Data/train_dataset.pk'):
+        train_dataset = Classification_Dataset(
+            args.dataset_path, args.max_len, tokenizer, "train",
+        )
+        with open('../Data/train_dataset.pk', 'wb') as f:
+            pickle.dump(train_dataset, f)
+    else:
+        with open('../Data/train_dataset.pk', 'rb') as f:
+            train_dataset = pickle.load(f)
 
-    # dev_dataset = Classification_Dataset(
-    #     args.dataset_path, args.max_len, tokenizer, "dev",
-    # )
+    dev_dataset = Classification_Dataset(
+        args.dataset_path, args.max_len, tokenizer, "dev",
+    )
 
     train_dataloader = train_dataset.make_dataloader(
         batch_size=args.train_batch_size_per_gpu
     )
-    # dev_dataloader = dev_dataset.make_dataloader(
-    #     batch_size=args.dev_batch_size_per_gpu)
+    dev_dataloader = dev_dataset.make_dataloader(
+        batch_size=args.dev_batch_size_per_gpu)
     model.set_example_num(len(train_dataset))
 
     # set trainer
@@ -93,8 +100,8 @@ def main(args):
     trainer = Trainer(
         max_epochs=args.epoch,
         val_check_interval=0.1,
-        gpus=gpus,
-        accelerator=accelerator,
+        gpus=1,
+        accelerator='gpu',
         deterministic=True,
         default_root_dir=args.output_path,
         logger=tblogger,
@@ -103,7 +110,7 @@ def main(args):
     )
 
     trainer.fit(model, train_dataloader)
-    # trainer.fit(model, train_dataloader, dev_dataloader)
+    trainer.fit(model, train_dataloader, dev_dataloader)
     logger.info('finished')
 
 
@@ -120,7 +127,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_len", type=int, default=None)
     parser.add_argument("--label_num", type=int, default=0)
 
-    # hparams & device
+    # hparams & device=
     parser.add_argument("--epoch", default=1, type=int)
     parser.add_argument("--learning_rate", default=5e-5, type=float)
     parser.add_argument("--adam_epsilon", default=1e-8, type=float)
@@ -139,15 +146,15 @@ if __name__ == "__main__":
     --output_path ../output_model/Classification_Model
     --dataset_path ../newData
     --max_len 64
-    --epoch 5
+    --epoch 1
     --learning_rate 5e-5
     --adam_epsilon 1e-6
     --warmup_proportion 0.01
-    --train_batch_size_per_gpu 2
-    --gradient_accumulation_step 1
+    --train_batch_size_per_gpu 4
+    --gradient_accumulation_step 2
     --dev_batch_size_per_gpu 32
     --seed 42
-    --gpus_id -1
+    --gpus_id 0
     """
 
     args = parser.parse_args(arg_str.split())
