@@ -4,5 +4,5 @@ init_model/
 output_model/
 Data/
 newData/
-Ranking_Model/__pycache__/
+sa_model/__pycache__/
 
