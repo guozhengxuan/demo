@@ -9,7 +9,10 @@ class ClassificationPredictor:
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         model_path = glob.glob(os.path.join(SA_BEST_MODEL, '*.ckpt'))[0]
-        self.model = Wrapper_Model.load_from_checkpoint(model_path)
+        self.model = Wrapper_Model.load_from_checkpoint(
+            checkpoint_path=model_path,
+            PTM_name_or_path=BERT
+        )
         self.model.to(self.device)
         self.model.eval()
 
