@@ -20,7 +20,7 @@ def sa_classify():
     params['text'] = params['text'].replace('\t', ' ').replace('\n', ' ').replace(' ', '')
     pred = predictor.predict(params)
     res = {
-        'label': label2str[str(int(np.argmax(pred)))]
+        'label': label2str[str(pred)]
     }
     return jsonify(res)
 
